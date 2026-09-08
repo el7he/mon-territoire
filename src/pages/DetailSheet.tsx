@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import { Header } from "@codegouvfr/react-dsfr/Header";
 import { Footer } from "@codegouvfr/react-dsfr/Footer";
 import { SkipLinks } from "@codegouvfr/react-dsfr/SkipLinks";
@@ -15,6 +15,7 @@ import { searchCommunes } from "../api/geoapi";
 import type { Commune } from "../domain/commune";
 
 export function DetailSheet() {
+  const navigate = useNavigate();
   const { codeInsee } = useParams<{ codeInsee: string }>();
   const [summary, setSummary] = useState<RiskSummary | null>(null);
   const [loading, setLoading] = useState(true);
@@ -95,7 +96,14 @@ export function DetailSheet() {
             FRANÇAISE
           </>
         }
-        homeLinkProps={{ href: "/", title: "Accueil - Mon Territoire" }}
+        homeLinkProps={{
+          href: "/",
+          title: "Accueil - Mon Territoire",
+          onClick: (e) => {
+            e.preventDefault();
+            navigate("/");
+          },
+        }}
         serviceTitle="Mon Territoire"
         serviceTagline="Identité, risques et services publics de proximité"
         quickAccessItems={[headerFooterDisplayItem]}

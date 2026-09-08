@@ -14,11 +14,11 @@ import { searchCommunes } from "./api/geoapi";
 export type ViewState = "initial" | "loading" | "empty" | "error" | "success";
 
 export function App() {
-	const [query, setQuery] = useState("");
-	const [status, setStatus] = useState<ViewState>("initial");
-	const [errorMessage, setErrorMessage] = useState<string | undefined>();
-	const navigate = useNavigate(); 
-	const abortRef = useRef<AbortController | null>(null);
+  const navigate = useNavigate();
+  const [query, setQuery] = useState("");
+  const [status, setStatus] = useState<ViewState>("initial");
+  const [errorMessage, setErrorMessage] = useState<string | undefined>();
+  const abortRef = useRef<AbortController | null>(null);
 
 	const handleQueryChange = (newQuery: string) => {
 		setQuery(newQuery);
@@ -71,23 +71,32 @@ export function App() {
 		setErrorMessage(undefined);
 	};
 
-	return (
-		<>
-			<SkipLinks links={[{ anchor: "#main-content", label: "Contenu" }]} />
+  const handleHomeClick = (e: React.MouseEvent<HTMLAnchorElement>) => {
+    e.preventDefault();
+    handleReset();
+    navigate("/");
+  };
 
-			<Header
-				brandTop={
-					<>
-						RÉPUBLIQUE
-						<br />
-						FRANÇAISE
-					</>
-				}
-				homeLinkProps={{ href: "/", title: "Accueil - Mon Territoire" }}
-				serviceTitle="Mon Territoire"
-				serviceTagline="Identité, risques et services publics de proximité"
-				quickAccessItems={[headerFooterDisplayItem]}
-			/>
+  return (
+    <>
+      <SkipLinks links={[{ anchor: "#main-content", label: "Contenu" }]} />
+
+      <Header
+        brandTop={
+          <>
+            RÉPUBLIQUE
+            <br />
+            FRANÇAISE
+          </>
+        }
+        homeLinkProps={{
+          href: "/",
+          title: "Accueil - Mon Territoire",
+        }}
+        serviceTitle="Mon Territoire"
+        serviceTagline="Identité, risques et services publics de proximité"
+        quickAccessItems={[headerFooterDisplayItem]}
+      />
 
 			<Notice
 				title="Projet pédagogique, ne constitue pas un service officiel"
