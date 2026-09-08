@@ -8,6 +8,8 @@ import { InitialState } from "./components/InitialState";
 import { SearchBar } from "./components/SearchBar";
 import { EmptyState } from "./components/EmptyState";
 import { ErrorState } from "./components/ErrorState";
+import type { Commune } from "./domain/commune";
+import { searchCommunes } from "./api/geoapi";
 
 export type ViewState = "initial" | "loading" | "empty" | "error" | "success";
 
@@ -15,11 +17,13 @@ export function App() {
   const [query, setQuery] = useState("");
   const [status, setStatus] = useState<ViewState>("initial");
   const [errorMessage, setErrorMessage] = useState<string | undefined>();
+  const [communes, setCommunes] = useState<Commune[]>([]);
 
   const handleQueryChange = (newQuery: string) => {
     setQuery(newQuery);
     if (newQuery.trim() === "") {
       setStatus("initial");
+      setCommunes([]);
       setErrorMessage(undefined);
     }
   };
@@ -28,6 +32,7 @@ export function App() {
     const q = (typeof searchQuery === "string" ? searchQuery : query).trim();
     if (!q) {
       setStatus("initial");
+      
       return;
     }
     setStatus("empty");
