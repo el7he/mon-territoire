@@ -10,7 +10,7 @@ import { Alert } from "@codegouvfr/react-dsfr/Alert";
 import { fetchCommuneRisks } from "../api/georisques";
 import type { RiskSummary } from "../domain/risks.types";
 import { NotFoundPage } from "./NotFoundPage";
-import { searchCommunes, type CommuneRecord } from "../api/annuaire";
+import { searchByCommunes, type CommuneRecord } from "../api/annuaire";
 
 export function DetailSheet() {
   const { codeInsee } = useParams<{ codeInsee: string }>();
@@ -57,7 +57,7 @@ export function DetailSheet() {
       .finally(() => setLoading(false));
 
     setLoadingServices(true);
-    searchCommunes(codeInsee, controller.signal)
+    searchByCommunes(codeInsee, controller.signal)
       .then((res) => setServices(res.records))
       .catch((err) => {
         if (err.name !== "AbortError") setServices([]);

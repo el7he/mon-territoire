@@ -9,7 +9,7 @@ import { InitialState } from "./components/InitialState";
 import { SearchBar } from "./components/SearchBar";
 import { EmptyState } from "./components/EmptyState";
 import { ErrorState } from "./components/ErrorState";
-import { searchCommunes } from "./api/annuaire";
+import { searchByCommunes } from "./api/annuaire";
 
 export type ViewState = "initial" | "loading" | "empty" | "error" | "success";
 
@@ -42,7 +42,7 @@ export function App() {
     setStatus("loading");
 
     try {
-      const result = await searchCommunes(cleanQuery, controller.signal);
+      const result = await searchByCommunes(cleanQuery, controller.signal);
 
       if (result.records.length === 0) {
         setStatus("empty");

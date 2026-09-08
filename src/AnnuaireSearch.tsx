@@ -1,6 +1,6 @@
 import { useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { searchCommunes, type CommuneRecord } from "./api/annuaire";
+import { searchByCommunes, type CommuneRecord } from "./api/annuaire";
 import { EmptyState } from "./components/EmptyState";
 import { ErrorState } from "./components/ErrorState";
 import { InitialState } from "./components/InitialState";
@@ -39,7 +39,7 @@ export function AnnuaireSearch() {
     setError(undefined);
 
     try {
-      const result = await searchCommunes(cleanQuery, controller.signal);
+      const result = await searchByCommunes(cleanQuery, controller.signal);
       setRecords(result.records);
 
       // Redirection directe vers DetailSheet si le résultat est unique

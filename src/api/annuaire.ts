@@ -18,7 +18,7 @@ interface AnnuaireResponse {
 const annuaireUrl =
   "https://api-lannuaire.service-public.fr/api/explore/v2.1/catalog/datasets/api-lannuaire-administration-locale-competence-geographique/records";
 
-export async function searchCommunes(
+export async function searchByCommunes(
   query: string,
   signal?: AbortSignal
 ): Promise<{ records: CommuneRecord[]; totalCount: number }> {
