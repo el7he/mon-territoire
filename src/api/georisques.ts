@@ -1,5 +1,8 @@
+<<<<<<< HEAD
 // src/api/georisques.ts
 
+=======
+>>>>>>> 805a2c939ac659b861c73b562caddd5a14b9fac4
 import type { RiskSummary } from '../domain/risks.types';
 
 interface FetchRisksParams {
