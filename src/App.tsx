@@ -3,6 +3,7 @@ import { Footer } from "@codegouvfr/react-dsfr/Footer";
 import { Notice } from "@codegouvfr/react-dsfr/Notice";
 import { SkipLinks } from "@codegouvfr/react-dsfr/SkipLinks";
 import { headerFooterDisplayItem } from "@codegouvfr/react-dsfr/Display";
+import AnnuaireSearch from './AnnuaireSearch'
 
 export function App() {
   return (
@@ -43,6 +44,7 @@ export function App() {
         <p className="fr-text--lead">
           Fiche d'identité d'une commune : informations administratives, risques et services publics.
         </p>
+        <AnnuaireSearch />
       </main>
 
       <Footer
