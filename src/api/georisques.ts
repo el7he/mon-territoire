@@ -1,3 +1,5 @@
+// src/api/georisques.ts
+
 import type { RiskSummary } from '../domain/risks.types';
 
 interface FetchRisksParams {
@@ -23,9 +25,7 @@ export async function fetchCommuneRisks({
 
   const response = await fetch(url.toString(), {
     method: 'GET',
-    headers: {
-      accept: 'application/json',
-    },
+    headers: { accept: 'application/json' },
     signal,
   });
 
@@ -34,16 +34,19 @@ export async function fetchCommuneRisks({
   }
 
   const data = await response.json();
-
-  // Extraction sécurisée pour éviter les crashs si l'API renvoie des listes vides/nulles (US C2)
   const rawList = Array.isArray(data?.data) ? data.data : [];
+  const communeName = rawList[0]?.libelle_commune ?? null;
 
   return {
     inseeCode: codeInsee,
-    risks: rawList.map((item: any, index: number) => ({
-      id: item?.num_risque ?? `${codeInsee}-risk-${index}`,
-      type: item?.libelle_risque_jo ?? 'Risque non spécifié',
-      description: item?.libelle_alea ?? 'Pas de détail disponible',
-    })),
+    communeName,
+    risks: rawList.flatMap((commune: any, communeIndex: number) => {
+      const details = Array.isArray(commune?.risques_detail) ? commune.risques_detail : [];
+      return details.map((item: any, index: number) => ({
+        id: item?.num_risque ?? `${codeInsee}-risk-${communeIndex}-${index}`,
+        type: item?.libelle_risque_long ?? 'Risque non spécifié',
+        description: item?.zone_sismicite ?? 'Pas de détail disponible',
+      }));
+    }),
   };
 }

@@ -12,7 +12,7 @@ export function SearchBar({ query, onQueryChange, onSearch }: SearchBarProps) {
     <div className="fr-mb-4w" style={{ display: "flex", alignItems: "flex-end", gap: "1rem" }}>
       <div style={{ flex: 1 }}>
         <DsfrSearchBar
-          label="Rechercher une commune par nom ou code postal"
+          label="Rechercher une commune par nom, code postal ou INSEE"
           renderInput={({ id, type, className }) => (
             <input
               id={id}

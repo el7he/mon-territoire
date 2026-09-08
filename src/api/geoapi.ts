@@ -19,13 +19,17 @@ export async function searchCommunes({
 
 	const url = new URL('https://geo.api.gouv.fr/communes');
 
-	const isPostalCode = /^\d+$/.test(text);
-	if (isPostalCode) {
-		url.searchParams.set('codePostal', text);
-	} else {
-		url.searchParams.set('nom', text);
-		url.searchParams.set('boost', 'population');
-	}
+	const isCode = /^\d+$/.test(text);
+    if (isCode) {
+        if (text.length === 5) {
+            url.searchParams.set('code', text);
+        } else {
+            url.searchParams.set('codePostal', text);
+        }
+    } else {
+        url.searchParams.set('nom', text);
+        url.searchParams.set('boost', 'population');
+    }
 
 	url.searchParams.set('fields', 'nom,code,codesPostaux,population,departement,region');
 	url.searchParams.set('limit', limit.toString());

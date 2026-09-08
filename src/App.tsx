@@ -1,4 +1,5 @@
-import { useState } from "react";
+import { useState, useRef } from "react";
+import { useNavigate } from "react-router-dom";
 import { Header } from "@codegouvfr/react-dsfr/Header";
 import { Footer } from "@codegouvfr/react-dsfr/Footer";
 import { Notice } from "@codegouvfr/react-dsfr/Notice";
@@ -8,104 +9,119 @@ import { InitialState } from "./components/InitialState";
 import { SearchBar } from "./components/SearchBar";
 import { EmptyState } from "./components/EmptyState";
 import { ErrorState } from "./components/ErrorState";
-import type { Commune } from "./domain/commune";
 import { searchCommunes } from "./api/geoapi";
 
 export type ViewState = "initial" | "loading" | "empty" | "error" | "success";
 
 export function App() {
-  const [query, setQuery] = useState("");
-  const [status, setStatus] = useState<ViewState>("initial");
-  const [errorMessage, setErrorMessage] = useState<string | undefined>();
-  const [communes, setCommunes] = useState<Commune[]>([]);
+	const [query, setQuery] = useState("");
+	const [status, setStatus] = useState<ViewState>("initial");
+	const [errorMessage, setErrorMessage] = useState<string | undefined>();
+	const navigate = useNavigate(); 
+	const abortRef = useRef<AbortController | null>(null);
 
-  const handleQueryChange = (newQuery: string) => {
-    setQuery(newQuery);
-    if (newQuery.trim() === "") {
-      setStatus("initial");
-      setCommunes([]);
-      setErrorMessage(undefined);
-    }
-  };
+	const handleQueryChange = (newQuery: string) => {
+		setQuery(newQuery);
+		if (newQuery.trim() === "") {
+			setStatus("initial");
+			setErrorMessage(undefined);
+		}
+	};
 
-  const handleSearch = (searchQuery?: string) => {
-    const q = (typeof searchQuery === "string" ? searchQuery : query).trim();
-    if (!q) {
-      setStatus("initial");
-      
-      return;
-    }
-    setStatus("empty");
-  };
+	const handleSearch = async (searchQuery?: string) => {
+		const cleanQuery = (typeof searchQuery === "string" ? searchQuery : query).trim();
+		if (!cleanQuery) {
+			setStatus("initial");
+			return;
+		}
 
-  const handleReset = () => {
-    setQuery("");
-    setStatus("initial");
-    setErrorMessage(undefined);
-  };
+		abortRef.current?.abort();
+		const controller = new AbortController();
+		abortRef.current = controller;
 
-  return (
-    <>
-      <SkipLinks
-        links={[
-          {
-            anchor: "#main-content",
-            label: "Contenu",
-          },
-        ]}
-      />
+		setStatus("loading");
 
-      <Header
-        brandTop={
-          <>
-            RÉPUBLIQUE
-            <br />
-            FRANÇAISE
-          </>
-        }
-        homeLinkProps={{
-          href: "/",
-          title: "Accueil - Mon Territoire",
-        }}
-        serviceTitle="Mon Territoire"
-        serviceTagline="Identité, risques et services publics de proximité"
-        quickAccessItems={[headerFooterDisplayItem]}
-      />
+		try {
+			const results = await searchCommunes({
+				query: cleanQuery,
+				signal: controller.signal,
+			});
 
-      <Notice
-        title="Projet pédagogique, ne constitue pas un service officiel"
-        severity="info"
-      />
+			if (results.length === 0) {
+				setStatus("empty");
+			} else if (results[0]?.codeInsee) {
+				navigate(`/info/${results[0].codeInsee}`, {
+					state: { commune: results[0] },
+				});
+			} else {
+				setStatus("empty");
+			}
+		} catch (err) {
+			if (err instanceof Error && err.name !== "AbortError") {
+				setErrorMessage(err.message);
+				setStatus("error");
+			}
+		}
+	};
 
-      <main id="main-content" className="fr-container fr-py-4w">
-        <h1 className="fr-h1">Consulter votre commune</h1>
+	const handleReset = () => {
+		abortRef.current?.abort();
+		setQuery("");
+		setStatus("initial");
+		setErrorMessage(undefined);
+	};
 
-        <SearchBar
-          query={query}
-          onQueryChange={handleQueryChange}
-          onSearch={handleSearch}
-          onReset={handleReset}
-        />
+	return (
+		<>
+			<SkipLinks links={[{ anchor: "#main-content", label: "Contenu" }]} />
 
-        {status === "initial" && <InitialState />}
-        {status === "empty" && <EmptyState query={query} />}
-        {status === "error" && <ErrorState message={errorMessage} />}
-      </main>
+			<Header
+				brandTop={
+					<>
+						RÉPUBLIQUE
+						<br />
+						FRANÇAISE
+					</>
+				}
+				homeLinkProps={{ href: "/", title: "Accueil - Mon Territoire" }}
+				serviceTitle="Mon Territoire"
+				serviceTagline="Identité, risques et services publics de proximité"
+				quickAccessItems={[headerFooterDisplayItem]}
+			/>
 
-      <Footer
-        brandTop={
-          <>
-            RÉPUBLIQUE
-            <br />
-            FRANÇAISE
-          </>
-        }
-        accessibility="non compliant"
-        contentDescription="Projet L3 Service Public Numérique - Sujet D."
-        bottomItems={[headerFooterDisplayItem]}
-      />
-    </>
-  );
+			<Notice
+				title="Projet pédagogique, ne constitue pas un service officiel"
+				severity="info"
+			/>
+
+			<main id="main-content" className="fr-container fr-py-4w">
+				<h1 className="fr-h1">Consulter votre commune</h1>
+				<SearchBar
+					query={query}
+					onQueryChange={handleQueryChange}
+					onSearch={handleSearch}
+					onReset={handleReset}
+				/>
+				{status === "loading" && <p role="status">Recherche en cours...</p>}
+				{status === "initial" && <InitialState />}
+				{status === "empty" && <EmptyState query={query} />}
+				{status === "error" && <ErrorState message={errorMessage} onRetry={() => handleSearch(query)} />}
+			</main>
+
+			<Footer
+				brandTop={
+					<>
+						RÉPUBLIQUE
+						<br />
+						FRANÇAISE
+					</>
+				}
+				accessibility="non compliant"
+				contentDescription="Projet L3 Service Public Numérique - Sujet D."
+				bottomItems={[headerFooterDisplayItem]}
+			/>
+		</>
+	);
 }
 
 export default App;

@@ -1,3 +1,5 @@
+// src/domain/risks.types.ts
+
 export interface RiskItem {
   id: string;
   type: string;
@@ -6,5 +8,6 @@ export interface RiskItem {
 
 export interface RiskSummary {
   inseeCode: string;
+  communeName: string | null;
   risks: RiskItem[];
 }
