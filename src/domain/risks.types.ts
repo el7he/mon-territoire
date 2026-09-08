@@ -8,5 +8,6 @@ export interface RiskItem {
 
 export interface RiskSummary {
   inseeCode: string;
+  communeName: string | null;
   risks: RiskItem[];
 }

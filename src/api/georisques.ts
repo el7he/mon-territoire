@@ -25,9 +25,7 @@ export async function fetchCommuneRisks({
 
   const response = await fetch(url.toString(), {
     method: 'GET',
-    headers: {
-      accept: 'application/json',
-    },
+    headers: { accept: 'application/json' },
     signal,
   });
 
@@ -36,11 +34,12 @@ export async function fetchCommuneRisks({
   }
 
   const data = await response.json();
-
   const rawList = Array.isArray(data?.data) ? data.data : [];
+  const communeName = rawList[0]?.libelle_commune ?? null;
 
   return {
     inseeCode: codeInsee,
+    communeName,
     risks: rawList.flatMap((commune: any, communeIndex: number) => {
       const details = Array.isArray(commune?.risques_detail) ? commune.risques_detail : [];
       return details.map((item: any, index: number) => ({
