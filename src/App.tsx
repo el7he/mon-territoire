@@ -10,6 +10,7 @@ import { SearchBar } from "./components/SearchBar";
 import { EmptyState } from "./components/EmptyState";
 import { ErrorState } from "./components/ErrorState";
 import { searchCommunes } from "./api/geoapi";
+import type { Commune } from "./domain/commune";
 
 export type ViewState = "initial" | "loading" | "empty" | "error" | "success";
 
@@ -77,6 +78,12 @@ export function App() {
     navigate("/");
   };
 
+  const handleSelectCommune = (commune: Commune) => {
+    navigate(`/info/${commune.codeInsee}`, {
+      state: { commune },
+    });
+  };
+
   return (
     <>
       <SkipLinks links={[{ anchor: "#main-content", label: "Contenu" }]} />
@@ -92,6 +99,7 @@ export function App() {
         homeLinkProps={{
           href: "/",
           title: "Accueil - Mon Territoire",
+          onClick: handleHomeClick,
         }}
         serviceTitle="Mon Territoire"
         serviceTagline="Identité, risques et services publics de proximité"
@@ -109,6 +117,7 @@ export function App() {
 					query={query}
 					onQueryChange={handleQueryChange}
 					onSearch={handleSearch}
+					onSelectCommune={handleSelectCommune}
 					onReset={handleReset}
 				/>
 				{status === "loading" && <p role="status">Recherche en cours...</p>}

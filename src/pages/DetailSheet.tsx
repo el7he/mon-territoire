@@ -4,7 +4,6 @@ import { Header } from "@codegouvfr/react-dsfr/Header";
 import { Footer } from "@codegouvfr/react-dsfr/Footer";
 import { SkipLinks } from "@codegouvfr/react-dsfr/SkipLinks";
 import { headerFooterDisplayItem } from "@codegouvfr/react-dsfr/Display";
-import { Badge } from "@codegouvfr/react-dsfr/Badge";
 import { Tag } from "@codegouvfr/react-dsfr/Tag";
 import { Alert } from "@codegouvfr/react-dsfr/Alert";
 import { fetchCommuneRisks } from "../api/georisques";
