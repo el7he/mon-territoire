@@ -1,4 +1,5 @@
 import { Alert } from "@codegouvfr/react-dsfr/Alert";
+import { Button } from "@codegouvfr/react-dsfr/Button";
 
 interface EmptyStateProps {
   query: string;
@@ -23,13 +24,13 @@ export function EmptyState({ query, onReset }: EmptyStateProps) {
               </li>
             </ul>
             {onReset && (
-              <button
-                type="button"
-                className="fr-btn fr-btn--secondary fr-btn--icon-left fr-icon-refresh-line"
+              <Button
+                priority="secondary"
+                iconId="fr-icon-refresh-line"
                 onClick={onReset}
               >
                 Réinitialiser la recherche
-              </button>
+              </Button>
             )}
           </div>
         }
