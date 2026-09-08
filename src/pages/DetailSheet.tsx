@@ -10,6 +10,7 @@ import { Alert } from "@codegouvfr/react-dsfr/Alert";
 import { fetchCommuneRisks } from "../api/georisques";
 import type { RiskSummary } from "../domain/risks.types";
 import { NotFoundPage } from "./NotFoundPage";
+import { searchCommunes, type CommuneRecord } from "../api/annuaire";
 
 export function DetailSheet() {
   const { codeInsee } = useParams<{ codeInsee: string }>();
@@ -17,6 +18,9 @@ export function DetailSheet() {
   const [loading, setLoading] = useState(true);
   const [notFound, setNotFound] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
+  const [services, setServices] = useState<CommuneRecord[]>([]);
+  const [loadingServices, setLoadingServices] = useState(true);
 
   useEffect(() => {
     if (!codeInsee) {
@@ -52,6 +56,14 @@ export function DetailSheet() {
       })
       .finally(() => setLoading(false));
 
+    setLoadingServices(true);
+    searchCommunes(codeInsee, controller.signal)
+      .then((res) => setServices(res.records))
+      .catch((err) => {
+        if (err.name !== "AbortError") setServices([]);
+      })
+      .finally(() => setLoadingServices(false));
+
     return () => controller.abort();
   }, [codeInsee]);
 
@@ -59,9 +71,7 @@ export function DetailSheet() {
 
   return (
     <>
-      <SkipLinks
-        links={[{ anchor: "#main-content", label: "Contenu" }]}
-      />
+      <SkipLinks links={[{ anchor: "#main-content", label: "Contenu" }]} />
 
       <Header
         brandTop={
@@ -106,7 +116,33 @@ export function DetailSheet() {
 
             <section className="fr-mt-4w">
               <h2 className="fr-h4">Services</h2>
-              <Badge severity="info">En cours</Badge>
+              {loadingServices ? (
+                <p>Chargement des services publics...</p>
+              ) : services.length === 0 ? (
+                <p>Aucun service public trouvé pour cette commune.</p>
+              ) : (
+                <div className="fr-grid-row fr-grid-row--gutters">
+                  {services.map((service, index) => (
+                    <div
+                      key={service.id_service_local || index}
+                      className="fr-col-12 fr-col-md-6"
+                    >
+                      <div className="fr-card fr-card--no-icon">
+                        <div className="fr-card__body">
+                          <div className="fr-card__content">
+                            <h3 className="fr-card__title">
+                              {service.nom_structure || service.code_type_service_local || "Service public"}
+                            </h3>
+                            <p className="fr-card__desc">
+                              {service.nom_commune} ({service.code_insee_commune})
+                            </p>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
             </section>
           </>
         )}

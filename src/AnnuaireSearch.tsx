@@ -1,148 +1,144 @@
-import { useState, useEffect, FormEvent } from 'react';
+import { useRef, useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { searchCommunes, type CommuneRecord } from "./api/annuaire";
+import { EmptyState } from "./components/EmptyState";
+import { ErrorState } from "./components/ErrorState";
+import { InitialState } from "./components/InitialState";
+import { SearchBar } from "./components/SearchBar";
 
-interface AdministrationRecord {
-  code_insee_commune?: string;
-  nom_commune?: string;
-  id_service_local?: string;
-  code_type_service_local?: string;
-}
+export function AnnuaireSearch() {
+  const [query, setQuery] = useState("");
+  const [searchedQuery, setSearchedQuery] = useState("");
+  const [records, setRecords] = useState<CommuneRecord[]>([]);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string>();
 
-function App() {
-  return (
-    <main>
-      <AnnuaireSearch />
-    </main>
-  )
-}
-interface ApiResponse {
-  total_count: number;
-  results: AdministrationRecord[];
-}
+  const abortRef = useRef<AbortController | null>(null);
+  const navigate = useNavigate();
 
-function parseServiceIds(idString?: string): string[] {
-  if (!idString) return [];
-  try {
-    const parsed = JSON.parse(idString);
-    return Array.isArray(parsed) ? parsed : [];
-  } catch {
-    return [];
-  }
-}
+  const handleQueryChange = (newQuery: string) => {
+    setQuery(newQuery);
+    if (newQuery.trim() === "") {
+      abortRef.current?.abort();
+      setSearchedQuery("");
+      setRecords([]);
+      setError(undefined);
+    }
+  };
 
-export default function AnnuaireSearch() {
-  const [searchTerm, setSearchTerm] = useState<string>('');
-  const [searchCode, setSearchCode] = useState<string>(''); 
-  const [activeSearch, setActiveSearch] = useState<{ term: string; code: string }>({ term: '', code: '' });
-  const [limit, setLimit] = useState<number>(10);
+  const handleSearch = async (searchQuery?: string) => {
+    const cleanQuery = (typeof searchQuery === "string" ? searchQuery : query).trim();
+    if (!cleanQuery) return;
 
-  const [data, setData] = useState<AdministrationRecord[]>([]);
-  const [totalCount, setTotalCount] = useState<number>(0);
-  const [loading, setLoading] = useState<boolean>(false);
-  const [error, setError] = useState<string | null>(null);
+    abortRef.current?.abort();
+    const controller = new AbortController();
+    abortRef.current = controller;
 
-  useEffect(() => {
-    const fetchData = async () => {
-      setLoading(true);
-      setError(null);
+    setSearchedQuery(cleanQuery);
+    setLoading(true);
+    setError(undefined);
 
-      const baseUrl = 'https://api-lannuaire.service-public.fr/api/explore/v2.1/catalog/datasets/api-lannuaire-administration-locale-competence-geographique/records';
-      let url = `${baseUrl}?limit=${limit}`;
+    try {
+      const result = await searchCommunes(cleanQuery, controller.signal);
+      setRecords(result.records);
 
-      const conditions: string[] = [];
-
-      // Filtre par nom ou type de service
-      if (activeSearch.term.trim()) {
-        const cleanTerm = activeSearch.term.trim().replace(/"/g, '\\"');
-        conditions.push(`(suggest(nom_commune, "${cleanTerm}") OR code_type_service_local LIKE "${cleanTerm}")`);
+      // Redirection directe vers DetailSheet si le résultat est unique
+      if (result.records.length === 1 && result.records[0].code_insee_commune) {
+        navigate(`/info/${result.records[0].code_insee_commune}`);
       }
-
-      // Filtre par code INSEE
-      if (activeSearch.code.trim()) {
-        const cleanCode = activeSearch.code.trim().replace(/"/g, '\\"');
-        conditions.push(`code_insee_commune LIKE "${cleanCode}"`);
+    } catch (err) {
+      if (err instanceof Error && err.name !== "AbortError") {
+        setError(err.message);
       }
-
-      if (conditions.length > 0) {
-        url += `&where=${encodeURIComponent(conditions.join(' AND '))}`;
-      }
-
-      try {
-        const response = await fetch(url);
-        if (!response.ok) throw new Error(`Erreur HTTP : ${response.status}`);
-
-        const json: ApiResponse = await response.json();
-        setData(json.results || []);
-        setTotalCount(json.total_count || 0);
-      } catch (err) {
-        setError(err instanceof Error ? err.message : 'Une erreur est survenue.');
-      } finally {
+    } finally {
+      if (!controller.signal.aborted) {
         setLoading(false);
       }
-    };
+    }
+  };
 
-    fetchData();
-  }, [activeSearch, limit]);
-
-  const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    setActiveSearch({ term: searchTerm, code: searchCode });
+  const handleReset = () => {
+    abortRef.current?.abort();
+    setQuery("");
+    setSearchedQuery("");
+    setRecords([]);
+    setError(undefined);
+    setLoading(false);
   };
 
   return (
-    <div>
-      <h2>Recherche Administration</h2>
+    <section aria-labelledby="search-title">
+      <h1 className="fr-h1" id="search-title">
+        Consulter votre commune
+      </h1>
 
-      <form onSubmit={handleSubmit}>
-        <input
-          type="text"
-          value={searchTerm}
-          onChange={(e) => setSearchTerm(e.target.value)}
-          placeholder="Commune ou service..."
-        />
+      <SearchBar
+        query={query}
+        onQueryChange={handleQueryChange}
+        onSearch={handleSearch}
+        onReset={handleReset}
+      />
 
-        <input
-          type="text"
-          value={searchCode}
-          onChange={(e) => setSearchCode(e.target.value)}
-          placeholder="Code INSEE..."
-        />
-
-        <select value={limit} onChange={(e) => setLimit(Number(e.target.value))}>
-          <option value={5}>5</option>
-          <option value={10}>10</option>
-          <option value={20}>20</option>
-          <option value={50}>50</option>
-        </select>
-
-        <button type="submit">Rechercher</button>
-      </form>
-
-      {loading && <p>Chargement...</p>}
-      {error && <p>Erreur : {error}</p>}
-
-      {!loading && !error && (
-        <>
-          <p>{totalCount} résultat(s)</p>
-          <ul>
-            {data.map((item, index) => {
-              const serviceIds = parseServiceIds(item.id_service_local);
-              return (
-                <li key={index}>
-                  <h3>{item.nom_commune || 'Inconnue'}</h3>
-                  <p>Code INSEE : {item.code_insee_commune}</p>
-                  <p>Type : {item.code_type_service_local}</p>
-                  <p>Services ({serviceIds.length}) :</p>
-                  <ul>
-                    {serviceIds.map((id) => (
-                      <li key={id}>{id}</li>
-                    ))}
-                  </ul>
-                </li>
-              );
-            })}
-          </ul>
-        </>
+      {loading && (
+        <p className="fr-my-4w" role="status">
+          Recherche en cours...
+        </p>
       )}
-    </div>
+
+      {error && (
+        <ErrorState
+          message={error}
+          onRetry={() => handleSearch(searchedQuery)}
+        />
+      )}
+
+      {!loading && !error && !searchedQuery && <InitialState />}
+
+      {!loading && !error && searchedQuery && records.length === 0 && (
+        <EmptyState query={searchedQuery} />
+      )}
+
+      {/* Si plusieurs communes correspondent à la recherche */}
+      {!loading && !error && records.length > 1 && (
+        <div className="fr-mt-4w">
+          <p className="fr-text--bold">
+            {records.length} résultats trouvés. Veuillez sélectionner une commune :
+          </p>
+          <div className="fr-grid-row fr-grid-row--gutters">
+            {records.map((item, index) => (
+              <div
+                className="fr-col-12 fr-col-md-6 fr-col-lg-4"
+                key={item.id_service_local || `${item.code_insee_commune}-${index}`}
+              >
+                <div className="fr-card fr-card--no-icon">
+                  <div className="fr-card__body">
+                    <div className="fr-card__content">
+                      <h2 className="fr-card__title">
+                        <button
+                          type="button"
+                          className="fr-btn fr-btn--tertiary-no-outline"
+                          onClick={() => {
+                            if (item.code_insee_commune) {
+                              navigate(`/info/${item.code_insee_commune}`);
+                            }
+                          }}
+                        >
+                          {item.nom_commune || "Commune inconnue"}
+                        </button>
+                      </h2>
+                      <p className="fr-card__desc">
+                        Code INSEE : {item.code_insee_commune || "N/A"}
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+    </section>
   );
 }
+
+export default AnnuaireSearch;
