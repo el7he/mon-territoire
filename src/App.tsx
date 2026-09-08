@@ -122,7 +122,7 @@ export function App() {
 				/>
 				{status === "loading" && <p role="status">Recherche en cours...</p>}
 				{status === "initial" && <InitialState />}
-				{status === "empty" && <EmptyState query={query} />}
+				{status === "empty" && <EmptyState query={query} onReset={handleReset} />}
 				{status === "error" && <ErrorState message={errorMessage} onRetry={() => handleSearch(query)} />}
 			</main>
 
