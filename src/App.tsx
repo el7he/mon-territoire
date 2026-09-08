@@ -10,6 +10,7 @@ import { EmptyState } from "./components/EmptyState";
 import { ErrorState } from "./components/ErrorState";
 
 export type ViewState = "initial" | "loading" | "empty" | "error" | "success";
+import AnnuaireSearch from './AnnuaireSearch'
 
 export function App() {
   const [query, setQuery] = useState("");
@@ -85,6 +86,11 @@ export function App() {
         {status === "initial" && <InitialState />}
         {status === "empty" && <EmptyState query={query} />}
         {status === "error" && <ErrorState message={errorMessage} />}
+        <h1 className="fr-h1">Bienvenue sur Mon Territoire</h1>
+        <p className="fr-text--lead">
+          Fiche d'identité d'une commune : informations administratives, risques et services publics.
+        </p>
+        <AnnuaireSearch />
       </main>
 
       <Footer
