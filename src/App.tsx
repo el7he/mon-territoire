@@ -3,6 +3,7 @@ import { Footer } from "@codegouvfr/react-dsfr/Footer";
 import { Notice } from "@codegouvfr/react-dsfr/Notice";
 import { SkipLinks } from "@codegouvfr/react-dsfr/SkipLinks";
 import { headerFooterDisplayItem } from "@codegouvfr/react-dsfr/Display";
+import { InitialState } from "./components/InitialState";
 
 export function App() {
   return (
@@ -39,10 +40,8 @@ export function App() {
       />
 
       <main id="main-content" className="fr-container fr-py-4w">
-        <h1 className="fr-h1">Bienvenue sur Mon Territoire</h1>
-        <p className="fr-text--lead">
-          Fiche d'identité d'une commune : informations administratives, risques et services publics.
-        </p>
+        <h1 className="fr-h1">Consulter votre commune</h1>
+        <InitialState />
       </main>
 
       <Footer
