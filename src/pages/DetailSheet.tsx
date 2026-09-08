@@ -238,11 +238,6 @@ export function DetailSheet() {
                               <p className="fr-card__desc fr-mb-0">
                                 {service.adresse ? service.adresse : `${service.nom_commune} (${service.code_insee_commune})`}
                               </p>
-                              {service.adresse && service.nom_commune && (
-                                <p className="fr-card__detail fr-mt-1v">
-                                  {service.nom_commune} ({service.code_insee_commune})
-                                </p>
-                              )}
                             </div>
                           </div>
                         </div>
