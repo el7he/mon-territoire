@@ -18,7 +18,6 @@ export function App() {
   const [query, setQuery] = useState("");
   const [status, setStatus] = useState<ViewState>("initial");
   const [errorMessage, setErrorMessage] = useState<string | undefined>();
-  const navigate = useNavigate();
   const abortRef = useRef<AbortController | null>(null);
 
   const handleQueryChange = (newQuery: string) => {
