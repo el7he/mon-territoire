@@ -1,3 +1,5 @@
+// src/domain/risks.types.ts
+
 export interface RiskItem {
   id: string;
   type: string;
