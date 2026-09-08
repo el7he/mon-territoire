@@ -1,4 +1,4 @@
-import { RiskSummary } from '../domain/risks.types';
+import type { RiskSummary } from '../domain/risks.types';
 
 interface FetchRisksParams {
   codeInsee: string;
@@ -39,7 +39,7 @@ export async function fetchCommuneRisks({
   const rawList = Array.isArray(data?.data) ? data.data : [];
 
   return {
-    inseeCode,
+    inseeCode: codeInsee,
     risks: rawList.map((item: any, index: number) => ({
       id: item?.num_risque ?? `${codeInsee}-risk-${index}`,
       type: item?.libelle_risque_jo ?? 'Risque non spécifié',
