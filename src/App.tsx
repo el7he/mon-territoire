@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { Header } from "@codegouvfr/react-dsfr/Header";
 import { Footer } from "@codegouvfr/react-dsfr/Footer";
 import { Notice } from "@codegouvfr/react-dsfr/Notice";
@@ -13,6 +14,7 @@ export type ViewState = "initial" | "loading" | "empty" | "error" | "success";
 import AnnuaireSearch from './AnnuaireSearch'
 
 export function App() {
+  const navigate = useNavigate();
   const [query, setQuery] = useState("");
   const [status, setStatus] = useState<ViewState>("initial");
   const [errorMessage, setErrorMessage] = useState<string | undefined>();
@@ -40,6 +42,12 @@ export function App() {
     setErrorMessage(undefined);
   };
 
+  const handleHomeClick = (e: React.MouseEvent<HTMLAnchorElement>) => {
+    e.preventDefault();
+    handleReset();
+    navigate("/");
+  };
+
   return (
     <>
       <SkipLinks
@@ -62,6 +70,7 @@ export function App() {
         homeLinkProps={{
           href: "/",
           title: "Accueil - Mon Territoire",
+          onClick: handleHomeClick,
         }}
         serviceTitle="Mon Territoire"
         serviceTagline="Identité, risques et services publics de proximité"

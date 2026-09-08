@@ -1,18 +1,10 @@
-import { useState, useEffect, FormEvent } from 'react';
+import { useState, useEffect, type FormEvent } from 'react';
 
 interface AdministrationRecord {
   code_insee_commune?: string;
   nom_commune?: string;
   id_service_local?: string;
   code_type_service_local?: string;
-}
-
-function App() {
-  return (
-    <main>
-      <AnnuaireSearch />
-    </main>
-  )
 }
 interface ApiResponse {
   total_count: number;
@@ -31,7 +23,7 @@ function parseServiceIds(idString?: string): string[] {
 
 export default function AnnuaireSearch() {
   const [searchTerm, setSearchTerm] = useState<string>('');
-  const [searchCode, setSearchCode] = useState<string>(''); 
+  const [searchCode, setSearchCode] = useState<string>('');
   const [activeSearch, setActiveSearch] = useState<{ term: string; code: string }>({ term: '', code: '' });
   const [limit, setLimit] = useState<number>(10);
 

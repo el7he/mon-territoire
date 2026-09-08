@@ -4,9 +4,11 @@ import { Footer } from "@codegouvfr/react-dsfr/Footer";
 import { SkipLinks } from "@codegouvfr/react-dsfr/SkipLinks";
 import { headerFooterDisplayItem } from "@codegouvfr/react-dsfr/Display";
 import { Alert } from "@codegouvfr/react-dsfr/Alert";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 export function NotFoundPage() {
+  const navigate = useNavigate();
+
   useEffect(() => {
     document.title = "Page non trouvée";
   }, []);
@@ -23,7 +25,14 @@ export function NotFoundPage() {
             FRANÇAISE
           </>
         }
-        homeLinkProps={{ href: "/", title: "Accueil - Mon Territoire" }}
+        homeLinkProps={{
+          href: "/",
+          title: "Accueil - Mon Territoire",
+          onClick: (e) => {
+            e.preventDefault();
+            navigate("/");
+          },
+        }}
         serviceTitle="Mon Territoire"
         quickAccessItems={[headerFooterDisplayItem]}
       />
