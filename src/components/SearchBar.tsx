@@ -1,49 +1,38 @@
-import React from "react";
+import { SearchBar as DsfrSearchBar } from "@codegouvfr/react-dsfr/SearchBar";
 
 interface SearchBarProps {
   query: string;
   onQueryChange: (newQuery: string) => void;
-  onSearch: (e: React.FormEvent) => void;
+  onSearch: (queryToSearch: string) => void;
   onReset: () => void;
 }
 
-export function SearchBar({ query, onQueryChange, onSearch, onReset }: SearchBarProps) {
+export function SearchBar({ query, onQueryChange, onSearch }: SearchBarProps) {
   return (
-    <form
-      role="search"
-      className="fr-search-bar fr-mb-4w"
-      id="search-commune-bar"
-      onSubmit={onSearch}
-    >
-      <label className="fr-label" htmlFor="search-commune-input">
-        Rechercher une commune par nom ou code postal
-      </label>
-      <input
-        className="fr-input"
-        placeholder="Ex: Nantes, 44000, Paris, 69001..."
-        type="search"
-        id="search-commune-input"
-        name="search-commune-input"
-        value={query}
-        onChange={(e) => onQueryChange(e.target.value)}
-        aria-label="Rechercher une commune par nom ou par code postal"
-      />
-      <button className="fr-btn" title="Rechercher" type="submit" id="search-submit-btn">
-        Rechercher
-      </button>
-
-      {query.length > 0 && (
-        <button
-          type="button"
-          className="fr-btn fr-btn--tertiary fr-ml-2w"
-          onClick={onReset}
-          title="Effacer la recherche"
-          id="search-reset-btn"
-        >
-          Effacer
-        </button>
-      )}
-    </form>
+    <div className="fr-mb-4w" style={{ display: "flex", alignItems: "flex-end", gap: "1rem" }}>
+      <div style={{ flex: 1 }}>
+        <DsfrSearchBar
+          label="Rechercher une commune par nom ou code postal"
+          renderInput={({ id, type, className }) => (
+            <input
+              id={id}
+              type={type}
+              className={className}
+              placeholder="Ex: Nantes, 44000, Paris, 69001..."
+              value={query}
+              onChange={(e) => onQueryChange(e.target.value)}
+              onKeyDown={(e) => {
+                if (e.key === "Enter") {
+                  e.preventDefault();
+                  onSearch(query);
+                }
+              }}
+            />
+          )}
+          onButtonClick={(text) => onSearch(text || query)}
+        />
+      </div>
+    </div>
   );
 }
 

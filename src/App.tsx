@@ -24,12 +24,13 @@ export function App() {
     }
   };
 
-  const handleSearch = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!query.trim()) {
+  const handleSearch = (searchQuery?: string) => {
+    const q = (typeof searchQuery === "string" ? searchQuery : query).trim();
+    if (!q) {
       setStatus("initial");
       return;
     }
+    setStatus("empty");
   };
 
   const handleReset = () => {
