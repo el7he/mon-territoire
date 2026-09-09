@@ -37,7 +37,7 @@ export function NotFoundPage() {
         quickAccessItems={[headerFooterDisplayItem]}
       />
 
-      <main id="main-content" className="fr-container fr-py-4w">
+      <main id="main-content" className="fr-container fr-py-4w" style={{ minHeight: "60vh" }}>
         <Alert
           severity="error"
           title="404 — Page non trouvée"

@@ -19,6 +19,7 @@ export function Spinner({ size = "md", label = "Chargement en cours..." }: Spinn
         width: "100%",
         minHeight: "250px",
       }}
+      /* avertit les lecteurs d'écran dès qu'un chargement commence. */
       role="status"
       aria-live="polite"
       aria-busy="true"

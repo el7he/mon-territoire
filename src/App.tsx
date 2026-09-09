@@ -112,7 +112,7 @@ export function App() {
 				severity="info"
 			/>
 
-			<main id="main-content" className="fr-container fr-py-4w">
+			<main id="main-content" className="fr-container fr-py-4w" style={{ minHeight: "60vh" }}>
 				<h1 className="fr-h1">Consulter votre commune</h1>
 				<SearchBar
 					query={query}

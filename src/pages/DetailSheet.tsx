@@ -81,7 +81,10 @@ export function DetailSheet() {
   };
 
   useEffect(() => {
-    return loadData();
+    const cleanup = loadData();
+    return () => {
+      cleanup?.();
+    };
   }, [codeInsee]);
 
   // Chargement des services publics lors du changement de page ou de limite
@@ -143,8 +146,10 @@ export function DetailSheet() {
         quickAccessItems={[headerFooterDisplayItem]}
       />
 
-      <main id="main-content" className="fr-container fr-py-4w">
-        {loading && <Spinner label="Chargement des informations de la commune..." />}
+      <main id="main-content" className="fr-container fr-py-4w" style={{ minHeight: "60vh" }}>
+        {(loading || !summary) && !error && (
+          <Spinner label="Chargement des informations de la commune..." />
+        )}
 
         {error && (
           <ErrorState message={error} onRetry={loadData} />
