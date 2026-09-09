@@ -186,7 +186,13 @@ export function DetailSheet() {
                   Services publics
                 </h2>
 
+                <span className="fr-text--sm fr-mb-0">
+                  Nombre de resultats :{" "}
+                  {totalServices}
+                </span>
+
                 <div style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
+
                   <label
                     htmlFor="services-limit-select"
                     className="fr-text--sm fr-mb-0"
