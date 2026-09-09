@@ -1,4 +1,3 @@
-import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { Header } from "@codegouvfr/react-dsfr/Header";
 import { Footer } from "@codegouvfr/react-dsfr/Footer";
@@ -7,106 +6,25 @@ import { headerFooterDisplayItem } from "@codegouvfr/react-dsfr/Display";
 import { Tag } from "@codegouvfr/react-dsfr/Tag";
 import { Button } from "@codegouvfr/react-dsfr/Button";
 import { ErrorState } from "../components/ErrorState";
-import { fetchCommuneRisks } from "../api/georisques";
-import type { RiskSummary } from "../domain/risks.types";
 import { NotFoundPage } from "./NotFoundPage";
-import { searchByCommunes, type CommuneRecord } from "../api/annuaire";
-import { searchCommunes } from "../api/geoapi";
-import type { Commune } from "../domain/commune";
+import { useCommune } from "../hooks/Commune";
+import { useRisks } from "../hooks/Risks";
+import { useServices } from "../hooks/Services";
 
 export function DetailSheet() {
   const navigate = useNavigate();
   const { codeInsee } = useParams<{ codeInsee: string }>();
-  const [summary, setSummary] = useState<RiskSummary | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [notFound, setNotFound] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-
-  // Équipements / Services publics avec pagination
-  const [services, setServices] = useState<CommuneRecord[]>([]);
-  const [loadingServices, setLoadingServices] = useState(true);
-  const [servicesLimit, setServicesLimit] = useState<number>(20);
-  const [servicesOffset, setServicesOffset] = useState<number>(0);
-  const [totalServices, setTotalServices] = useState<number>(0);
-
-  const [communeInfo, setCommuneInfo] = useState<Commune | null>(null);
-
-  const loadData = () => {
-    if (!codeInsee) {
-      setNotFound(true);
-      setLoading(false);
-      return;
-    }
-
-    document.title = `Chargement — ${codeInsee}`;
-    const controller = new AbortController();
-    setLoading(true);
-    setNotFound(false);
-    setError(null);
-
-    searchCommunes({ query: codeInsee, signal: controller.signal })
-      .then((results) => {
-        if (results.length > 0) {
-          setCommuneInfo(results[0]);
-        }
-      })
-      .catch((err) => {
-        if (err.name !== "AbortError") console.error(err);
-      });
-
-    fetchCommuneRisks({ codeInsee, signal: controller.signal })
-      .then((result) => {
-        if (result.risks.length === 0) {
-          setNotFound(true);
-          return;
-        }
-        setSummary(result);
-        document.title = result.communeName
-          ? `${result.communeName} — ${codeInsee}`
-          : `Risques — ${codeInsee}`;
-      })
-      .catch((err: Error) => {
-        if (err.name === "AbortError") return;
-        if (err.message.includes("404")) {
-          setNotFound(true);
-        } else {
-          setError(err.message);
-        }
-      })
-      .finally(() => setLoading(false));
-
-    return () => controller.abort();
-  };
-
-  useEffect(() => {
-    return loadData();
-  }, [codeInsee]);
-
-  // Chargement des services publics lors du changement de page ou de limite
-  useEffect(() => {
-    if (!codeInsee) return;
-    const controller = new AbortController();
-    setLoadingServices(true);
-
-    searchByCommunes(codeInsee, {
-      limit: servicesLimit,
-      offset: servicesOffset,
-      signal: controller.signal,
-    })
-      .then((res) => {
-        setServices(res.records);
-        setTotalServices(res.totalCount);
-      })
-      .catch((err) => {
-        if (err.name !== "AbortError") {
-          setServices([]);
-          setTotalServices(0);
-        }
-      })
-      .finally(() => setLoadingServices(false));
-
-    return () => controller.abort();
-  }, [codeInsee, servicesLimit, servicesOffset]);
+  const { communeInfo } = useCommune(codeInsee);
+  const { summary, loading, notFound, error, retry } = useRisks(codeInsee);
+  const {
+    services,
+    loadingServices,
+    servicesLimit,
+    setServicesLimit,
+    servicesOffset,
+    setServicesOffset,
+    totalServices,
+  } = useServices(codeInsee);
 
   if (notFound) return <NotFoundPage />;
 
@@ -139,7 +57,7 @@ export function DetailSheet() {
         {loading && <p>Chargement...</p>}
 
         {error && (
-          <ErrorState message={error} onRetry={loadData} />
+          <ErrorState message={error} onRetry={retry} />
         )}
 
         {summary && (
