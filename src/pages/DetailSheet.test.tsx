@@ -49,7 +49,7 @@ describe('DetailSheet', () => {
   it('affiche la page 404 si aucun risque n’est trouvé', async () => {
     vi.mocked(fetchCommuneRisks).mockResolvedValue({
       inseeCode: '00000',
-      communeName: null,
+      communeName: 'Nom non renseigné',
       risks: [],
     });
 
