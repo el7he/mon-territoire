@@ -7,6 +7,7 @@ import { headerFooterDisplayItem } from "@codegouvfr/react-dsfr/Display";
 import { Tag } from "@codegouvfr/react-dsfr/Tag";
 import { Button } from "@codegouvfr/react-dsfr/Button";
 import { ErrorState } from "../components/ErrorState";
+import { Spinner } from "../components/Spinner";
 import { fetchCommuneRisks } from "../api/georisques";
 import type { RiskSummary } from "../domain/risks";
 import { NotFoundPage } from "./NotFoundPage";
@@ -95,8 +96,10 @@ export function DetailSheet() {
       signal: controller.signal,
     })
       .then((res) => {
-        setServices(res.records);
-        setTotalServices(res.totalCount);
+        if (!controller.signal.aborted) {
+          setServices(res.records);
+          setTotalServices(res.totalCount);
+        }
       })
       .catch((err) => {
         if (err.name !== "AbortError") {
@@ -104,7 +107,11 @@ export function DetailSheet() {
           setTotalServices(0);
         }
       })
-      .finally(() => setLoadingServices(false));
+      .finally(() => {
+        if (!controller.signal.aborted) {
+          setLoadingServices(false);
+        }
+      });
 
     return () => controller.abort();
   }, [codeInsee, servicesLimit, servicesOffset]);
@@ -137,7 +144,7 @@ export function DetailSheet() {
       />
 
       <main id="main-content" className="fr-container fr-py-4w">
-        {loading && <p>Chargement...</p>}
+        {loading && <Spinner label="Chargement des informations de la commune..." />}
 
         {error && (
           <ErrorState message={error} onRetry={loadData} />
@@ -213,6 +220,7 @@ export function DetailSheet() {
                     }}
                     value={servicesLimit}
                     onChange={(e) => {
+                      setLoadingServices(true);
                       setServicesLimit(Number(e.target.value));
                       setServicesOffset(0);
                     }}
@@ -225,7 +233,7 @@ export function DetailSheet() {
               </div>
 
               {loadingServices ? (
-                <p>Chargement des services publics...</p>
+                <Spinner label="Chargement des services publics..." />
               ) : services.length === 0 ? (
                 <p>Aucun service public trouvé pour cette commune.</p>
               ) : (
@@ -284,9 +292,10 @@ export function DetailSheet() {
                         iconId="fr-icon-arrow-left-line"
                         iconPosition="left"
                         disabled={servicesOffset === 0 || loadingServices}
-                        onClick={() =>
-                          setServicesOffset((prev) => Math.max(0, prev - servicesLimit))
-                        }
+                        onClick={() => {
+                          setLoadingServices(true);
+                          setServicesOffset((prev) => Math.max(0, prev - servicesLimit));
+                        }}
                       >
                         Précédent
                       </Button>
@@ -298,9 +307,10 @@ export function DetailSheet() {
                           servicesOffset + services.length >= totalServices ||
                           loadingServices
                         }
-                        onClick={() =>
-                          setServicesOffset((prev) => prev + servicesLimit)
-                        }
+                        onClick={() => {
+                          setLoadingServices(true);
+                          setServicesOffset((prev) => prev + servicesLimit);
+                        }}
                       >
                         Suivant ({servicesLimit} suivants)
                       </Button>

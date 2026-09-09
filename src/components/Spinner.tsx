@@ -17,8 +17,11 @@ export function Spinner({ size = "md", label = "Chargement en cours..." }: Spinn
         alignItems: "center",
         justifyContent: "center",
         width: "100%",
+        minHeight: "250px",
       }}
       role="status"
+      aria-live="polite"
+      aria-busy="true"
     >
       {/* Cercle SVG animé autonome */}
       <svg
