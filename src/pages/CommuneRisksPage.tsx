@@ -1,7 +1,7 @@
 // src/pages/CommuneRisksPage.tsx
 import { useState, useRef } from 'react';
 import { fetchCommuneRisks } from '../api/georisques';
-import type { RiskSummary } from '../domain/risks.types';
+import type { RiskSummary } from '../domain/risks';
 
 export function CommuneRisksPage() {
   const [codeInsee, setCodeInsee] = useState('');
