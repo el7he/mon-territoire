@@ -8,9 +8,10 @@ import { Tag } from "@codegouvfr/react-dsfr/Tag";
 import { Button } from "@codegouvfr/react-dsfr/Button";
 import { ErrorState } from "../components/ErrorState";
 import { fetchCommuneRisks } from "../api/georisques";
-import type { RiskSummary } from "../domain/risks.types";
+import type { RiskSummary } from "../domain/risks";
 import { NotFoundPage } from "./NotFoundPage";
 import { searchByCommunes, type CommuneRecord } from "../api/annuaire";
+import { normalizeServicePublic } from "../domain/servicePublic";
 import { searchCommunes } from "../api/geoapi";
 import type { Commune } from "../domain/commune";
 
@@ -30,7 +31,7 @@ export function DetailSheet() {
   const [totalServices, setTotalServices] = useState<number>(0);
 
   const [communeInfo, setCommuneInfo] = useState<Commune | null>(null);
-
+  
   const loadData = () => {
     if (!codeInsee) {
       setNotFound(true);
@@ -230,25 +231,33 @@ export function DetailSheet() {
               ) : (
                 <>
                   <div className="fr-grid-row fr-grid-row--gutters">
-                    {services.map((service, index) => (
-                      <div
-                        key={service.id_service_local || index}
-                        className="fr-col-12 fr-col-md-6"
-                      >
-                        <div className="fr-card fr-card--no-icon">
-                          <div className="fr-card__body">
-                            <div className="fr-card__content">
-                              <h3 className="fr-card__title">
-                                {service.nom_structure || service.code_type_service_local || "Service public"}
-                              </h3>
-                              <p className="fr-card__desc fr-mb-0">
-                                {service.adresse ? service.adresse : `${service.nom_commune} (${service.code_insee_commune})`}
-                              </p>
+                    {services.map((service, index) => {
+                      const normalized = normalizeServicePublic(service);
+                      return (
+                        <div
+                          key={normalized.id || index}
+                          className="fr-col-12 fr-col-md-6"
+                        >
+                          <div className="fr-card fr-card--no-icon">
+                            <div className="fr-card__body">
+                              <div className="fr-card__content">
+                                <h3 className="fr-card__title">
+                                  {normalized.nomStructure}
+                                </h3>
+                                <p className="fr-card__desc fr-mb-0">
+                                  {normalized.adresse}
+                                </p>
+                                {normalized.nomCommune && (
+                                  <p className="fr-card__detail fr-mt-1v">
+                                    {normalized.nomCommune} ({normalized.codeInsee})
+                                  </p>
+                                )}
+                              </div>
                             </div>
                           </div>
                         </div>
-                      </div>
-                    ))}
+                      );
+                    })}
                   </div>
 
                   {/* Barre de navigation de pagination */}

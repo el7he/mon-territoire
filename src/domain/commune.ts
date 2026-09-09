@@ -16,19 +16,20 @@ export interface Commune {
     population: string;
 }
 
-export function CommuneData(raw: ApiCommuneRaw): Commune {
+export function CommuneData(raw?: ApiCommuneRaw | null): Commune {
+    const safeRaw = raw || {};
     return {
-        codeInsee: raw.code || 'Inconnu',
-        nom: raw.nom || 'Nom non renseigné',
-        codesPostaux: Array.isArray(raw.codesPostaux) && raw.codesPostaux.length > 0 
-        ? raw.codesPostaux 
-        : ['Non renseigné'],
-        population: typeof raw.population === 'number' 
-        ? String(raw.population)
-        : 'Non renseignée',
-        departement: raw.departement?.nom 
-        ? `${raw.departement.nom} (${raw.departement.code ?? 'Code non renseigné'})` 
-        : 'Département non renseigné',
-        region: raw.region?.nom || 'Région non renseignée',
+        codeInsee: safeRaw.code || 'Inconnu',
+        nom: safeRaw.nom || 'Nom non renseigné',
+        codesPostaux: Array.isArray(safeRaw.codesPostaux) && safeRaw.codesPostaux.length > 0 
+            ? safeRaw.codesPostaux 
+            : ['Non renseigné'],
+        population: typeof safeRaw.population === 'number' 
+            ? String(safeRaw.population)
+            : 'Non renseignée',
+        departement: safeRaw.departement?.nom 
+            ? `${safeRaw.departement.nom} (${safeRaw.departement.code ?? 'Code non renseigné'})` 
+            : 'Département non renseigné',
+        region: safeRaw.region?.nom || 'Région non renseignée',
     };
 }
