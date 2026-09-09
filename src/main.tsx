@@ -1,4 +1,5 @@
 import React from "react";
+import "@codegouvfr/react-dsfr/main.css";
 import ReactDOM from "react-dom/client";
 import { BrowserRouter, Routes, Route, Link } from "react-router-dom";
 import { startReactDsfr } from "@codegouvfr/react-dsfr/spa";

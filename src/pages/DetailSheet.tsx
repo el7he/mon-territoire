@@ -31,7 +31,7 @@ export function DetailSheet() {
   const [totalServices, setTotalServices] = useState<number>(0);
 
   const [communeInfo, setCommuneInfo] = useState<Commune | null>(null);
-
+  
   const loadData = () => {
     if (!codeInsee) {
       setNotFound(true);

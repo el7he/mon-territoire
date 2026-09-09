@@ -5,6 +5,7 @@ import { EmptyState } from "./components/EmptyState";
 import { ErrorState } from "./components/ErrorState";
 import { InitialState } from "./components/InitialState";
 import { SearchBar } from "./components/SearchBar";
+import { Spinner } from "./components/Spinner";
 
 export function AnnuaireSearch() {
   const [query, setQuery] = useState("");
@@ -80,10 +81,8 @@ export function AnnuaireSearch() {
       />
 
       {loading && (
-        <p className="fr-my-4w" role="status">
-          Recherche en cours...
-        </p>
-      )}
+        <Spinner label="Recherche en cours..." size="md" />
+         )}
 
       {error && (
         <ErrorState

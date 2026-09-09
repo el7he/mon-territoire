@@ -11,6 +11,7 @@ import { EmptyState } from "./components/EmptyState";
 import { ErrorState } from "./components/ErrorState";
 import { searchCommunes } from "./api/geoapi";
 import type { Commune } from "./domain/commune";
+import { Spinner } from "./components/Spinner";
 
 export type ViewState = "initial" | "loading" | "empty" | "error" | "success";
 
@@ -120,7 +121,7 @@ export function App() {
 					onSelectCommune={handleSelectCommune}
 					onReset={handleReset}
 				/>
-				{status === "loading" && <p role="status">Recherche en cours...</p>}
+				{status === "loading" && <Spinner label="Recherche en cours..."/>}
 				{status === "initial" && <InitialState />}
 				{status === "empty" && <EmptyState query={query} onReset={handleReset} />}
 				{status === "error" && <ErrorState message={errorMessage} onRetry={() => handleSearch(query)} />}
