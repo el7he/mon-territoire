@@ -12,6 +12,7 @@ import { useRisks } from "../hooks/Risks";
 import { useServices } from "../hooks/Services";
 import { Spinner } from "../components/Spinner";
 import { normalizeServicePublic } from "../domain/servicePublic";
+import type { RiskItem } from "../domain/risks";
 
 export function DetailSheet() {
   const navigate = useNavigate();
@@ -85,7 +86,7 @@ export function DetailSheet() {
             <section className="fr-mt-4w">
               <h2 className="fr-h4">Risques</h2>
               <ul className="fr-tags-group">
-                {summary.risks.map((risk) => (
+                {summary.risks.map((risk: RiskItem) => (
                   <li key={risk.id}>
                     <Tag>{risk.type}</Tag>
                   </li>
@@ -134,7 +135,6 @@ export function DetailSheet() {
                     }}
                     value={servicesLimit}
                     onChange={(e) => {
-                      setLoadingServices(true);
                       setServicesLimit(Number(e.target.value));
                       setServicesOffset(0);
                     }}
@@ -207,7 +207,6 @@ export function DetailSheet() {
                         iconPosition="left"
                         disabled={servicesOffset === 0 || loadingServices}
                         onClick={() => {
-                          setLoadingServices(true);
                           setServicesOffset((prev) => Math.max(0, prev - servicesLimit));
                         }}
                       >
@@ -222,7 +221,6 @@ export function DetailSheet() {
                           loadingServices
                         }
                         onClick={() => {
-                          setLoadingServices(true);
                           setServicesOffset((prev) => prev + servicesLimit);
                         }}
                       >
