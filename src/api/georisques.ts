@@ -1,6 +1,5 @@
-// src/api/georisques.ts
-
-import type { RiskSummary } from '../domain/risks.types';
+import type { RiskSummary } from "../domain/risks";
+import { normalizeRiskSummary } from "../domain/risks";
 
 interface FetchRisksParams {
   codeInsee: string;
@@ -17,15 +16,15 @@ export async function fetchCommuneRisks({
   pageSize = 10,
   signal,
 }: FetchRisksParams): Promise<RiskSummary> {
-  const url = new URL('https://www.georisques.gouv.fr/api/v1/gaspar/risques');
-  url.searchParams.set('code_insee', codeInsee);
-  url.searchParams.set('rayon', rayon.toString());
-  url.searchParams.set('page', page.toString());
-  url.searchParams.set('page_size', pageSize.toString());
+  const url = new URL("https://www.georisques.gouv.fr/api/v1/gaspar/risques");
+  url.searchParams.set("code_insee", codeInsee);
+  url.searchParams.set("rayon", rayon.toString());
+  url.searchParams.set("page", page.toString());
+  url.searchParams.set("page_size", pageSize.toString());
 
   const response = await fetch(url.toString(), {
-    method: 'GET',
-    headers: { accept: 'application/json' },
+    method: "GET",
+    headers: { accept: "application/json" },
     signal,
   });
 
@@ -35,18 +34,23 @@ export async function fetchCommuneRisks({
 
   const data = await response.json();
   const rawList = Array.isArray(data?.data) ? data.data : [];
-  const communeName = rawList[0]?.libelle_commune ?? null;
+  const communeName = rawList[0]?.libelle_commune ?? "Nom non renseigné";
 
-  return {
-    inseeCode: codeInsee,
-    communeName,
-    risks: rawList.flatMap((commune: any, communeIndex: number) => {
-      const details = Array.isArray(commune?.risques_detail) ? commune.risques_detail : [];
-      return details.map((item: any, index: number) => ({
-        id: item?.num_risque ?? `${codeInsee}-risk-${communeIndex}-${index}`,
-        type: item?.libelle_risque_long ?? 'Risque non spécifié',
-        description: item?.zone_sismicite ?? 'Pas de détail disponible',
-      }));
-    }),
-  };
+  const rawRisks = rawList.flatMap((commune: any, communeIndex: number) => {
+    const details = Array.isArray(commune?.risques_detail) ? commune.risques_detail : [];
+    return details.map((item: any, index: number) => ({
+      id: item?.num_risque ?? `${codeInsee}-risk-${communeIndex}-${index}`,
+      type: item?.libelle_risque_long ?? "Risque non spécifié",
+      description: item?.zone_sismicite ?? "Pas de détail disponible",
+    }));
+  });
+
+  return normalizeRiskSummary(
+    {
+      inseeCode: codeInsee,
+      communeName,
+      risks: rawRisks,
+    },
+    codeInsee
+  );
 }

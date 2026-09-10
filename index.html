@@ -1,22 +1,32 @@
 <!doctype html>
-<html lang="en">
+<html lang="fr">
 
 <head>
-  <link rel="apple-touch-icon" href="./node_modules/@codegouvfr/react-dsfr/favicon/apple-touch-icon.png" />
-  <link rel="icon" href="./node_modules/@codegouvfr/react-dsfr/favicon/favicon.svg" type="image/svg+xml" />
-  <link rel="shortcut icon" href="./node_modules/@codegouvfr/react-dsfr/favicon/favicon.ico" type="image/x-icon" />
-  <link rel="manifest" href="./node_modules/@codegouvfr/react-dsfr/favicon/manifest.webmanifest"
-    crossorigin="use-credentials" />
-
-  <link rel="stylesheet" href="./node_modules/@codegouvfr/react-dsfr/main.css" />
   <meta charset="UTF-8" />
-  <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Mon territoire</title>
+
+  <link rel="apple-touch-icon" href="https://unpkg.com/@codegouvfr/react-dsfr/dsfr/favicon/apple-touch-icon.png" />
+  <link rel="icon" href="https://unpkg.com/@codegouvfr/react-dsfr/dsfr/favicon/favicon.svg" type="image/svg+xml" />
+  <link rel="shortcut icon" href="https://unpkg.com/@codegouvfr/react-dsfr/dsfr/favicon/favicon.ico" type="image/x-icon" />
+
+  <link rel="stylesheet" href="https://unpkg.com/@codegouvfr/react-dsfr/dsfr/dsfr.min.css" />
+  <link rel="stylesheet" href="https://unpkg.com/@codegouvfr/react-dsfr/dsfr/utility/utility.min.css" />
+  <link rel="stylesheet" href="https://unpkg.com/@codegouvfr/react-dsfr/dsfr/utility/icons/icons.min.css" />
 </head>
 
 <body>
-  <div id="root"></div>
+  <div id="root">
+    <div style="display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 70vh; font-family: Marianne, system-ui, sans-serif;">
+      <svg width="48" height="48" viewBox="0 0 48 48" style="animation: spin-dsfr 1s linear infinite; display: block;" aria-hidden="true">
+        <circle cx="24" cy="24" r="18" stroke="#000091" stroke-width="4" fill="none" stroke-dasharray="80 35" />
+      </svg>
+      <style>
+        @keyframes spin-dsfr { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+      </style>
+      <p style="margin-top: 1rem; color: #000091; font-size: 0.95rem; font-weight: 500;">Chargement de l'application Mon Territoire...</p>
+    </div>
+  </div>
   <script type="module" src="/src/main.tsx"></script>
 </body>
 

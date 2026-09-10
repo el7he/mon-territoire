@@ -10,6 +10,8 @@ import { NotFoundPage } from "./NotFoundPage";
 import { useCommune } from "../hooks/Commune";
 import { useRisks } from "../hooks/Risks";
 import { useServices } from "../hooks/Services";
+import { Spinner } from "../components/Spinner";
+import { normalizeServicePublic } from "../domain/servicePublic";
 
 export function DetailSheet() {
   const navigate = useNavigate();
@@ -53,8 +55,10 @@ export function DetailSheet() {
         quickAccessItems={[headerFooterDisplayItem]}
       />
 
-      <main id="main-content" className="fr-container fr-py-4w">
-        {loading && <p>Chargement...</p>}
+      <main id="main-content" className="fr-container fr-py-4w" style={{ minHeight: "60vh" }}>
+        {(loading || !summary) && !error && (
+          <Spinner label="Chargement des informations de la commune..." />
+        )}
 
         {error && (
           <ErrorState message={error} onRetry={retry} />
@@ -130,6 +134,7 @@ export function DetailSheet() {
                     }}
                     value={servicesLimit}
                     onChange={(e) => {
+                      setLoadingServices(true);
                       setServicesLimit(Number(e.target.value));
                       setServicesOffset(0);
                     }}
@@ -142,31 +147,39 @@ export function DetailSheet() {
               </div>
 
               {loadingServices ? (
-                <p>Chargement des services publics...</p>
+                <Spinner label="Chargement des services publics..." />
               ) : services.length === 0 ? (
                 <p>Aucun service public trouvé pour cette commune.</p>
               ) : (
                 <>
                   <div className="fr-grid-row fr-grid-row--gutters">
-                    {services.map((service, index) => (
-                      <div
-                        key={service.id_service_local || index}
-                        className="fr-col-12 fr-col-md-6"
-                      >
-                        <div className="fr-card fr-card--no-icon">
-                          <div className="fr-card__body">
-                            <div className="fr-card__content">
-                              <h3 className="fr-card__title">
-                                {service.nom_structure || service.code_type_service_local || "Service public"}
-                              </h3>
-                              <p className="fr-card__desc fr-mb-0">
-                                {service.adresse ? service.adresse : `${service.nom_commune} (${service.code_insee_commune})`}
-                              </p>
+                    {services.map((service, index) => {
+                      const normalized = normalizeServicePublic(service);
+                      return (
+                        <div
+                          key={normalized.id || index}
+                          className="fr-col-12 fr-col-md-6"
+                        >
+                          <div className="fr-card fr-card--no-icon">
+                            <div className="fr-card__body">
+                              <div className="fr-card__content">
+                                <h3 className="fr-card__title">
+                                  {normalized.nomStructure}
+                                </h3>
+                                <p className="fr-card__desc fr-mb-0">
+                                  {normalized.adresse}
+                                </p>
+                                {normalized.nomCommune && (
+                                  <p className="fr-card__detail fr-mt-1v">
+                                    {normalized.nomCommune} ({normalized.codeInsee})
+                                  </p>
+                                )}
+                              </div>
                             </div>
                           </div>
                         </div>
-                      </div>
-                    ))}
+                      );
+                    })}
                   </div>
 
                   {/* Barre de navigation de pagination */}
@@ -193,9 +206,10 @@ export function DetailSheet() {
                         iconId="fr-icon-arrow-left-line"
                         iconPosition="left"
                         disabled={servicesOffset === 0 || loadingServices}
-                        onClick={() =>
-                          setServicesOffset((prev) => Math.max(0, prev - servicesLimit))
-                        }
+                        onClick={() => {
+                          setLoadingServices(true);
+                          setServicesOffset((prev) => Math.max(0, prev - servicesLimit));
+                        }}
                       >
                         Précédent
                       </Button>
@@ -207,9 +221,10 @@ export function DetailSheet() {
                           servicesOffset + services.length >= totalServices ||
                           loadingServices
                         }
-                        onClick={() =>
-                          setServicesOffset((prev) => prev + servicesLimit)
-                        }
+                        onClick={() => {
+                          setLoadingServices(true);
+                          setServicesOffset((prev) => prev + servicesLimit);
+                        }}
                       >
                         Suivant ({servicesLimit} suivants)
                       </Button>
