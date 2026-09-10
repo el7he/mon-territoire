@@ -31,3 +31,30 @@ Ce document liste l'utilisation des outils génératifs (IA) pour ce projet.
 EmptyState.tsx
 ErroState.tsx
 InitialState.tsx 
+
+## Trois cas où l'assistant s'est trompé (Nicolas)
+
+1. 
+
+Erreur de l'IA : L'ia ne gérait pas le cas où la requête échouait (ex: coupure réseau ou erreur serveur API) et laissait l'application bloquée dans un état de chargement infini sans réinitialiser les compteurs.
+
+Correction apportée : Ajout d'un bloc .catch() réinitialisant proprement le tableau à [] et le compteur totalServices à 0, associé à un bloc .finally() garantissant le passage de loadingServices à false
+
+2. 
+
+Erreur de l'IA : L'ia s'appuyait sur des classes CSS natives du DSFR mal configurées, ce qui faisait que le Spinner ne s'affichait simplement pas à l'écran.
+
+Correction apportée : Implémentation d'un cercle SVG autonome avec une animation @keyframes spin-dsfr intégrée trouver sur google
+
+3. 
+
+Erreur de l'IA : l'ia tentait de lire directement les champs adresse et id_service_local comme de simples chaînes de caractères, provoquant le plantage de l'application (JSON.parse non sécurisé) ou l'affichage de chaînes brutes qui était non formatées (ex:"type_adresse":"Adresse").
+
+Correction apportée : Ajout d'un bloc try / catch sécurisé dans formatAdresse pour extraire dynamiquement les clés du JSON (numero_voie, code_postal, nom_commune), et implémentation du parsing de id_service_local pour récupérer les détails de l'administration via une seconde requête d'enrichissement (adminUrl)
+
+## Code écrit sans assistance 
+
+Partie Render(render.yaml, interface a paramétrés)
+Implémentation de la balise spinner dans différents fichiers(DetailSheet.tsx, annuaireSearch.tsx, ect.)
+Typage des données reçu par l'api avec Typescript(annuaire.ts)
+
