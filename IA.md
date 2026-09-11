@@ -26,8 +26,8 @@ Ce document liste l'utilisation des outils génératifs (IA) pour ce projet.
    - **Correction apportée par l'utilisateur** : Test en mode 3G lente dans DevTools, correction du code : fixer une hauteur minimale (`min-height: 60vh`) ainsi qu'un spinner persistant tant qu'aucune donnée ou erreur n'est affichée.
 
 
-## Code écrit sans assistance 
-
+## Code écrit sans assistance (Matheo)
+Base du code écrit sans assistance puis revu par l'ia 
 EmptyState.tsx
 ErroState.tsx
 InitialState.tsx 
