@@ -43,3 +43,11 @@ L'interface gère explicitement 5 états visuels pour chaque interaction usager 
 
 - **Render.com** : Déploiement continu configuré via `render.yaml`.
 - **Pipeline de Build** : Automatisation de l'optimisation des CSS du DSFR (`react-dsfr optimize-css`) suivie de la compilation TypeScript et du bundler Vite (`tsc -b && vite build`).
+
+## 7. Fiche de Détail et Routage (US A2)
+
+La page `/info/:codeInsee` repose sur `useParams` pour lire le code INSEE directement dans l'URL, ce qui permet à une fiche d'être partageable et de survivre à un rafraîchissement de page. En l'absence de résultat (aucun risque recensé pour le code fourni), le service bascule explicitement sur `NotFoundPage` plutôt que d'afficher un écran vide ou une erreur technique, conformément à l'exigence de distinguer un 404 d'un simple écran blanc.
+
+## 8. Accessibilité Automatisée (US C4)
+
+En complément de la vérification manuelle à la touche Tab exigée en preuve d'acceptance, un test automatisé a été ajouté avec `vitest-axe` pour détecter les violations d'accessibilité courantes (`toHaveNoViolations`), et un test de navigation clavier réelle avec `@testing-library/user-event` (`user.tab()`) qui vérifie que le focus atteint bien chaque élément interactif, sans jamais disparaître derrière un composant. Le typage de `toHaveNoViolations` n'étant pas correctement fusionné par la version actuelle de `vitest-axe` avec les types Vitest récents, une déclaration de type manuelle a été ajoutée dans `src/test/vitest-axe.d.ts` pour compléter l'interface `Assertion`.
