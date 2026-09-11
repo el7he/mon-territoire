@@ -58,3 +58,15 @@ Partie Render(render.yaml, interface a paramétrés)
 Implémentation de la balise spinner dans différents fichiers(DetailSheet.tsx, annuaireSearch.tsx, ect.)
 Typage des données reçu par l'api avec Typescript(annuaire.ts)
 
+## Un cas où l'assistant s'est trompé (Théo)
+
+1.
+
+Erreur de l'IA : L'assistant a proposé d'initialiser le socle DSFR via la commande npx start-dsfr-to-ui-kit, qui n'existe pas (erreur 404 sur le registre npm). La commande officielle npx @codegouvfr/react-dsfr a ensuite également échoué avec une erreur Unknown command undefined, bloquant l'installation dans le dossier du projet.
+
+Correction apportée par l'utilisateur : Consultation directe du dépôt GitHub officiel de react-dsfr, et installation manuelle du socle en suivant la section "Development" du README (git clone, puis yarn) plutôt que via la commande npx défaillante.
+
+## Code écrit sans assistance
+
+la base de DetailSheet.ts (revu par IA et tout les collègues)
+le début de georisques.ts (ne fonctionnait pas donc j'ai du recommencer avec IA)
