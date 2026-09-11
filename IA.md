@@ -26,8 +26,8 @@ Ce document liste l'utilisation des outils génératifs (IA) pour ce projet.
    - **Correction apportée par l'utilisateur** : Test en mode 3G lente dans DevTools, correction du code : fixer une hauteur minimale (`min-height: 60vh`) ainsi qu'un spinner persistant tant qu'aucune donnée ou erreur n'est affichée.
 
 
-## Code écrit sans assistance 
-
+## Code écrit sans assistance (Matheo)
+Base du code écrit sans assistance puis revu par l'ia 
 EmptyState.tsx
 ErroState.tsx
 InitialState.tsx 
@@ -84,3 +84,16 @@ Correction apportée : Ajout d'un bloc try / catch sécurisé dans formatAdresse
 ## Code écrit sans assistance 
 
 Les bases de mes fichiers. L'ia a été utilisée par dessus pour de potentiels oublis ou pour gérer des erreurs que je ne comprenais pas
+
+## Un cas où l'assistant s'est trompé (Théo)
+
+1.
+
+Erreur de l'IA : L'assistant a proposé d'initialiser le socle DSFR via la commande npx start-dsfr-to-ui-kit, qui n'existe pas (erreur 404 sur le registre npm). La commande officielle npx @codegouvfr/react-dsfr a ensuite également échoué avec une erreur Unknown command undefined, bloquant l'installation dans le dossier du projet.
+
+Correction apportée par l'utilisateur : Consultation directe du dépôt GitHub officiel de react-dsfr, et installation manuelle du socle en suivant la section "Development" du README (git clone, puis yarn) plutôt que via la commande npx défaillante.
+
+## Code écrit sans assistance
+
+la base de DetailSheet.ts (revu par IA et tout les collègues)
+le début de georisques.ts (ne fonctionnait pas donc j'ai du recommencer avec IA)
