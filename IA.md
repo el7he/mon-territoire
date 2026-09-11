@@ -58,6 +58,33 @@ Partie Render(render.yaml, interface a paramétrés)
 Implémentation de la balise spinner dans différents fichiers(DetailSheet.tsx, annuaireSearch.tsx, ect.)
 Typage des données reçu par l'api avec Typescript(annuaire.ts)
 
+
+
+## Trois cas où l'assistant s'est trompé (Léo)
+
+1. 
+
+Erreur de l'IA : L'ia pensait qu'on faisait la recherche par code postal et non par code insee (c'est ma faute j'ai mal contextualisé), elle m'a donc perdu dans un long truc inutile
+
+Correction apportée : J'ai tout supprimé, pris la base de nicolas pour l'api et on est reparti de 0
+
+2. 
+
+Erreur de l'IA : L'ia n'avait pas prévu de potentiels non retour d'api commme des code postaux non renseignés 
+
+Correction apportée : Il a fallut créer un filtrage avec des donnés ajustés si jamais es cas se manifestait
+
+3. 
+
+Erreur de l'IA : l'ia tentait de lire directement les champs adresse et id_service_local comme de simples chaînes de caractères, provoquant le plantage de l'application (JSON.parse non sécurisé) ou l'affichage de chaînes brutes qui était non formatées (ex:"type_adresse":"Adresse").
+
+Correction apportée : Ajout d'un bloc try / catch sécurisé dans formatAdresse pour extraire dynamiquement les clés du JSON (numero_voie, code_postal, nom_commune), et implémentation du parsing de id_service_local pour récupérer les détails de l'administration via une seconde requête d'enrichissement (adminUrl)
+
+
+## Code écrit sans assistance 
+
+Les bases de mes fichiers. L'ia a été utilisée par dessus pour de potentiels oublis ou pour gérer des erreurs que je ne comprenais pas
+
 ## Un cas où l'assistant s'est trompé (Théo)
 
 1.
