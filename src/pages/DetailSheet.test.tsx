@@ -1,14 +1,16 @@
+// src/pages/DetailSheet.test.tsx
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { render, screen, waitFor } from '@testing-library/react';
 import { MemoryRouter, Routes, Route } from 'react-router-dom';
 import { DetailSheet } from './DetailSheet';
 import { fetchCommuneRisks } from '../api/georisques';
+import { searchCommunes } from '../api/geoapi';
+import { searchByCommunes } from '../api/annuaire';
 
-// On remplace tout le module par une fausse version
 vi.mock('../api/georisques');
+vi.mock('../api/geoapi');
+vi.mock('../api/annuaire');
 
-// Petit utilitaire : monte DetailSheet comme si l'utilisateur
-// était arrivé directement sur /info/<codeInsee>
 function renderAt(codeInsee: string) {
   return render(
     <MemoryRouter initialEntries={[`/info/${codeInsee}`]}>
@@ -22,6 +24,11 @@ function renderAt(codeInsee: string) {
 describe('DetailSheet', () => {
   beforeEach(() => {
     vi.resetAllMocks();
+
+    // Réponses par défaut neutres pour les hooks annexes,
+    // à surcharger dans les tests qui s'y intéressent spécifiquement
+    vi.mocked(searchCommunes).mockResolvedValue([]);
+    vi.mocked(searchByCommunes).mockResolvedValue({ records: [], totalCount: 0 });
   });
 
   it('affiche les risques une fois les données chargées', async () => {
@@ -35,10 +42,8 @@ describe('DetailSheet', () => {
 
     renderAt('57751');
 
-    // Chargement affiché avant la résolution de la promesse
     expect(screen.getByText(/chargement/i)).toBeInTheDocument();
 
-    // waitFor : attend que le state se mette à jour après le fetch
     await waitFor(() => {
       expect(screen.getByText(/WOIPPY/i)).toBeInTheDocument();
     });

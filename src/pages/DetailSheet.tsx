@@ -1,3 +1,4 @@
+import { useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { Header } from "@codegouvfr/react-dsfr/Header";
 import { Footer } from "@codegouvfr/react-dsfr/Footer";
@@ -28,6 +29,18 @@ export function DetailSheet() {
     setServicesOffset,
     totalServices,
   } = useServices(codeInsee);
+
+  useEffect(() => {
+    if (summary) {
+      document.title = summary.communeName
+        ? `${summary.communeName} — ${summary.inseeCode}`
+        : `Risques — ${summary.inseeCode}`;
+    } else if (notFound) {
+      document.title = "Page non trouvée";
+    } else if (codeInsee) {
+      document.title = `Chargement — ${codeInsee}`;
+    }
+  }, [summary, notFound, codeInsee]);
 
   if (notFound) return <NotFoundPage />;
 
